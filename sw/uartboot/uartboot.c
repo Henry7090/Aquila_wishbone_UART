@@ -67,13 +67,40 @@
 #include <stdint.h>
 #include "io_uart.h"
 #define uart_setup  ((unsigned int volatile *) 0xC0000000)
+#define MAX_LEN 256
 
 int main(void){
     *uart_setup = 435;
     printf("hello world\n");
-    printf("in the uartboot try");
-    printf("please success");
+    printf("Try to run the inbyte function\n");
+    printf("please success\n");
+    char buffer[MAX_LEN];
+    int idx = 0;
+
+    while (1) {
+        char c = inbyte();  
+        if (c == '\n' || idx >= MAX_LEN - 1) {
+            break;  
+        } else {
+            buffer[idx++] = c;
+        }
+    }
+    
+    buffer[idx] = '\0';
+    printf("Received string: %s\n", buffer);
+    idx = 0;
+
+    // while (1) {
+    //     char c = inbyte();  
+
+    //     char str[2];
+    //     str[0] = c;
+    //     str[1] = '\0';  
+
+    //     printf("Received char as string: %s\n", str);
+    // }
        
     while(1);
     // exit(0);
 }
+

@@ -62,13 +62,13 @@ module core2wishboneuart_if #(parameter XLEN = 32, AXI_ADDR_LEN = 8, AXI_DATA_LE
     input                 rst_i,   // level-sensitive reset signal.
 
     // Aquila M_DEVICE master interface signals.
-    input                 S_DEVICE_strobe_i,
+    (* mark_debug = "true" *) input                 S_DEVICE_strobe_i,
     input  [XLEN-1 : 0]   S_DEVICE_addr_i,
-    input                 S_DEVICE_rw_i,
-    input  [XLEN/8-1 : 0] S_DEVICE_byte_enable_i,
-    input  [XLEN-1 : 0]   S_DEVICE_data_i,
-    output                S_DEVICE_data_ready_o,
-    output [XLEN-1 : 0]   S_DEVICE_data_o,
+    (* mark_debug = "true" *) input                 S_DEVICE_rw_i,
+    (* mark_debug = "true" *) input  [XLEN/8-1 : 0] S_DEVICE_byte_enable_i,
+    (* mark_debug = "true" *) input  [XLEN-1 : 0]   S_DEVICE_data_i,
+    (* mark_debug = "true" *) output                S_DEVICE_data_ready_o,
+    (* mark_debug = "true" *) output [XLEN-1 : 0]   S_DEVICE_data_o,
 
     // Converted WISHBONE interface signals 
     output  reg                     wb_cyc_o,

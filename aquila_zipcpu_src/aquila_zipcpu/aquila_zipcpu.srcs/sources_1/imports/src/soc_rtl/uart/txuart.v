@@ -131,17 +131,10 @@ module txuart #(
 		// A line to tell others when we are ready to accept data.  If
 		// (i_wr)&&(!o_busy) is ever true, then the core has accepted a
 		// byte for transmission.
-		(* mark_debug = "true" *) output	wire		o_busy
+		output	wire		o_busy
 		// }}}
 	);
-    wire [30:0] test_setup;
-    wire test_break;
-    wire test_wr;
-    wire test_data;
-    (* mark_debug = "true" *) assign test_setup = i_setup;
-    (* mark_debug = "true" *) assign test_break = i_break;
-    (* mark_debug = "true" *) assign test_wr = i_wr;
-    (* mark_debug = "true" *) assign test_data = i_data;
+    
 	// Signal declarations
 	// {{{
 	wire	[27:0]	clocks_per_baud, break_condition;
@@ -166,7 +159,7 @@ module txuart #(
 	reg	[7:0]	lcl_data;
 	reg		calc_parity;
 	reg r_busy;
-	(* mark_debug = "true" *) reg zero_baud_counter;
+	reg zero_baud_counter;
 	reg last_state;
 	reg		q_cts_n, qq_cts_n, ck_cts;
 	// }}}

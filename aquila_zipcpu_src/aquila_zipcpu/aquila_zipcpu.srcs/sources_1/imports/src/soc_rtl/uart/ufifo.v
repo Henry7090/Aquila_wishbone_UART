@@ -59,30 +59,14 @@ module ufifo #(
 		(* mark_debug = "true" *) output	wire		o_empty_n, // True if something is in FIFO
 		(* mark_debug = "true" *) input	wire		i_rd,
 		(* mark_debug = "true" *) output	wire [(BW-1):0]	o_data,
-		(* mark_debug = "true" *) output	wire	[15:0]	o_status,
-		(* mark_debug = "true" *) output	wire		o_err
+		output	wire	[15:0]	o_status,
+		output	wire		o_err
 		// }}}
 	);
 
 	// Signal declarations
 	// {{{
 	reg	[(BW-1):0]	fifo[0:(FLEN-1)];
-	(* mark_debug = "true" *) wire [(BW-1):0] fifo0;
-	(* mark_debug = "true" *) wire [(BW-1):0] fifo1;
-	(* mark_debug = "true" *) wire [(BW-1):0] fifo2;
-	(* mark_debug = "true" *) wire [(BW-1):0] fifo3;
-	(* mark_debug = "true" *) wire [(BW-1):0] fifo4;
-	(* mark_debug = "true" *) wire [(BW-1):0] fifo5;
-	(* mark_debug = "true" *) wire [(BW-1):0] fifo6;
-	(* mark_debug = "true" *) wire [(BW-1):0] fifo7;
-	assign fifo0 = fifo[0];
-	assign fifo1 = fifo[1];
-	assign fifo2 = fifo[2];
-	assign fifo3 = fifo[3];
-	assign fifo4 = fifo[4];
-	assign fifo5 = fifo[5];
-	assign fifo6 = fifo[6];
-	assign fifo7 = fifo[7];
 	reg	[(BW-1):0]	r_data, last_write;
 	reg	[(LGFLEN-1):0]	wr_addr, rd_addr, r_next;
 	reg			will_overflow, will_underflow;
@@ -222,7 +206,7 @@ module ufifo #(
 		osrc <= 1'b0;
 	// }}}
 
-	assign o_data = (i_rd) ? ((osrc) ? last_write : r_data) : 0;
+	assign o_data = (osrc) ? last_write : r_data;
 	// }}}
 	////////////////////////////////////////////////////////////////////////
 	//

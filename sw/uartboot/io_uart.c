@@ -69,16 +69,16 @@
 #define uart_txfifo ((unsigned int volatile *) 0xC000000c)
 
 // Declare the axi_uartlite status register control bits.
-#define TX_FIFO_FULL  8
-#define TX_FIFO_EMPTY 4
-#define RX_FIFO_FULL  2
-#define RX_FIFO_VALID 1
 #define UART_TX_FIFO_Z_BIT (1 << 16)
-
+#define UART_RX_FIFO_Z_BIT (1 << 0)
+#define uart_rxfifo_E_BIT (1 << 12)
 
 unsigned char inbyte(void)
 {
-    while ((*uart_status & RX_FIFO_VALID) == 0) /* wait */;
+    if (*uart_rxfifo & uart_rxfifo_E_BIT) {
+        printf("overflow\n");
+    }
+    while ((*uart_status & UART_RX_FIFO_Z_BIT) == 0) /* wait */;
     return (unsigned char) *uart_rxfifo;
 }
 

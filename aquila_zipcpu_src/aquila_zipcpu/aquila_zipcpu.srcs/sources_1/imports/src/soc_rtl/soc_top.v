@@ -153,7 +153,7 @@ wire [CLSIZE-1 : 0] DMEM_rd_data;
 // --------- I/O device interface ----------------------------------------------
 // Device bus signals
 wire                dev_strobe;
-wire [XLEN-1 : 0]   dev_addr;
+(* mark_debug = "true" *) wire [XLEN-1 : 0]   dev_addr;
 wire                dev_we;
 wire [XLEN/8-1 : 0] dev_be;
 wire [XLEN-1 : 0]   dev_din;
@@ -204,7 +204,7 @@ wire                MEM_zq_ack;
 `endif
 
 // Uart
-(* mark_debug = "true" *) wire                uart_sel;
+wire                uart_sel;
 wire [XLEN-1 : 0]   uart_dout;
 wire                uart_ready;
 

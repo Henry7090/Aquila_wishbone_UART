@@ -93,7 +93,7 @@
 module rxuart #(
 		// {{{
 		// 8 data bits, no parity, (at least 1) stop bit
-		parameter [30:0] INITIAL_SETUP = 31'd434,
+		parameter [30:0] INITIAL_SETUP = 31'd868,
 		// States: (@ baud counter == 0)
 		//	0	First bit arrives
 		//	..7	Bits arrive
@@ -124,14 +124,14 @@ module rxuart #(
 		// {{{
 		input	wire		i_clk, i_reset,
 		/* verilator lint_off UNUSED */
-		input	wire	[30:0]	i_setup,
+		(* mark_debug = "true" *) input	wire	[30:0]	i_setup,
 		/* verilator lint_on UNUSED */
-		input	wire		i_uart_rx,
-		output	reg		o_wr,
-		output	reg	[7:0]	o_data,
-		output	reg		o_break,
-		output	reg		o_parity_err, o_frame_err,
-		output	wire		o_ck_uart
+		(* mark_debug = "true" *) input	wire		i_uart_rx,
+		(* mark_debug = "true" *) output	reg		o_wr,
+		(* mark_debug = "true" *) output	reg	[7:0]	o_data,
+		(* mark_debug = "true" *) output	reg		o_break,
+		(* mark_debug = "true" *) output	reg		o_parity_err, o_frame_err,
+		(* mark_debug = "true" *) output	wire		o_ck_uart
 		// }}}
 	);
 
@@ -147,7 +147,7 @@ module rxuart #(
 	reg		zero_baud_counter;
 	reg		q_uart, qq_uart, ck_uart;
 	reg	[27:0]	chg_counter;
-	wire [23:0]  break_condition;
+	wire [27:0] break_condition;
 	reg		line_synch;
 	reg		half_baud_time;
 	reg	[7:0]	data_reg;
@@ -528,5 +528,4 @@ module rxuart #(
 		zero_baud_counter <= (baud_counter == 1);
 	// }}}
 endmodule
-
 

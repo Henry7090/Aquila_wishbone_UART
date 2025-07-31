@@ -4,7 +4,7 @@
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.                   -->
 <!-- Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.   -->
 
-<Project Product="Vivado" Version="7" Minor="68" Path="/home/henry7090/Desktop/Aquila_wishbone/hw/aquila_zipcpu_src/aquila_zipcpu/aquila_zipcpu.xpr">
+<Project Product="Vivado" Version="7" Minor="68" Path="/home/henry7090/Desktop/UART_TB/aquila_zipcpu_src/aquila_zipcpu/aquila_zipcpu.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="c64c21a2b45f478dbb7e26dde2a10b36"/>

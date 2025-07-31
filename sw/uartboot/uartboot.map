@@ -12,31 +12,31 @@ Linker script and memory map
 
                 0x00000300                        __stack_size = 0x300
 
-.text           0x00000000      0x554
+.text           0x00000000      0x5f4
  boot.o(.text)
  .text          0x00000000       0x34 boot.o
                 0x00000000                boot
  *(.text)
  .text          0x00000034        0x0 uartboot.o
- .text          0x00000034      0x520 io_uart.o
+ .text          0x00000034      0x5c0 io_uart.o
                 0x00000034                exit
-                0x00000078                inbyte
-                0x0000009c                outbyte
-                0x000000e8                getchar
-                0x0000010c                putchar
-                0x00000160                putd
-                0x00000240                putx
-                0x000002d0                puts
-                0x0000036c                printf
+                0x00000078                outbyte
+                0x000000c4                putchar
+                0x00000118                putd
+                0x000001f8                putx
+                0x00000288                puts
+                0x00000324                printf
+                0x0000050c                inbyte
+                0x00000580                getchar
 
-.text.startup   0x00000554       0x3c
- .text.startup  0x00000554       0x3c uartboot.o
-                0x00000554                main
+.text.startup   0x000005f4       0x8c
+ .text.startup  0x000005f4       0x8c uartboot.o
+                0x000005f4                main
 
-.rela.dyn       0x00000590        0x0
- .rela.sdata    0x00000590        0x0 boot.o
+.rela.dyn       0x00000680        0x0
+ .rela.sdata    0x00000680        0x0 boot.o
 
-.data           0x00000900       0xed
+.data           0x00000900      0x11e
  *(.data)
  .data          0x00000900        0x0 boot.o
  .data          0x00000900        0x0 uartboot.o
@@ -47,22 +47,22 @@ Linker script and memory map
  .bss           0x00000900        0x0 io_uart.o
  *(.rodata*)
  .rodata.str1.4
-                0x00000900       0x33 uartboot.o
- *fill*         0x00000933        0x1 
- .rodata        0x00000934       0xb9 io_uart.o
+                0x00000900       0x55 uartboot.o
+ *fill*         0x00000955        0x3 
+ .rodata        0x00000958       0xc6 io_uart.o
 
-.sdata          0x000009f0        0x4
- .sdata         0x000009f0        0x4 boot.o
-                0x000009f0                stack_top
+.sdata          0x00000a20        0x4
+ .sdata         0x00000a20        0x4 boot.o
+                0x00000a20                stack_top
 
-.sbss           0x000009f4        0x4
- .sbss          0x000009f4        0x4 boot.o
-                0x000009f4                sp_store
+.sbss           0x00000a24        0x4
+ .sbss          0x00000a24        0x4 boot.o
+                0x00000a24                sp_store
 
-.stack          0x00000a00      0x300
-                0x00000d00                        . = (. + __stack_size)
- *fill*         0x00000a00      0x300 
-                0x00000d00                        __stack_top = .
+.stack          0x00000a30      0x300
+                0x00000d30                        . = (. + __stack_size)
+ *fill*         0x00000a30      0x300 
+                0x00000d30                        __stack_top = .
 LOAD boot.o
 LOAD uartboot.o
 LOAD io_uart.o

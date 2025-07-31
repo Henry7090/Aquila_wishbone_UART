@@ -49,7 +49,7 @@ int main(){
 
     // sdcard initalize
     printf("Uartboot Test\n");
-    printf("hello world");
+    printf("hello world\n");
     return 0;
 }
 

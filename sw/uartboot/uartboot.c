@@ -67,40 +67,119 @@
 #include <stdint.h>
 #include "io_uart.h"
 #define uart_setup  ((unsigned int volatile *) 0xC0000000)
-#define MAX_LEN 256
 
-int main(void){
+int load_elf(Elf32_Ehdr *ehdr);
+
+// ------------------------------------------------------------------------------
+//  Memory Map:
+//     0x00000000 ~ 0x0000FFFF: on-chip memory (64KB, boot code)
+//     0x80000000 ~ 0x8FFFFFFF: main memory (code, data, heap, and stack)
+//     0xC0000000 ~ 0xCFFFFFFF: I/O device area
+//     0xF0000000 ~ 0xFFFFFFFF: system device area
+// ------------------------------------------------------------------------------
+
+uint8_t *prog;
+uint8_t eheader[64], pheader[128];
+char    *organization = "EISL@NYCU, Hsinchu, Taiwan";
+int     year = 2024;
+
+int main(void)
+{
     *uart_setup = 435;
-    printf("hello world\n");
-    printf("Try to run the inbyte function\n");
-    printf("please success\n");
-    char buffer[MAX_LEN];
-    int idx = 0;
+    Elf32_Ehdr *ehdr = (Elf32_Ehdr *) eheader;
+    uint32_t *magic = (uint32_t *) ELFMAG;
+    uint32_t size;
+    int idx;
 
-    while (1) {
-        char c = inbyte();  
-        if (c == '\n' || idx >= MAX_LEN - 1) {
-            break;  
-        } else {
-            buffer[idx++] = c;
+    printf("=======================================================================\n");
+    printf("Copyright (c) 2019-%d, %s.\n", year, organization);
+    printf("The Aquila SoC is ready.\n");
+    printf("Waiting for an ELF file to be sent from the UART ...\n");
+
+    // Read the ELF header.
+    for (idx = 0; idx < sizeof(Elf32_Ehdr); idx++)
+    {
+        eheader[idx] = inbyte();
+    }
+
+    // Read the Program headers.
+    for (idx = 0; idx < ehdr->e_phentsize*ehdr->e_phnum; idx++)
+    {
+        pheader[idx] = inbyte();
+    }
+
+    if (*((uint32_t *) ehdr->e_ident) == *magic)
+    {
+        prog = (uint8_t *) ehdr->e_entry; /* set program entry point */
+        size = ehdr->e_shoff + (ehdr->e_shentsize * ehdr->e_shnum);
+        load_elf(ehdr);
+
+        printf("\nProgram entry point at 0x%x, size = 0x%x.\n", prog, size);
+        printf("-----------------------------------------------------------------------\n");
+
+        // Call the entry point for execution.
+        asm volatile ("fence.i"); // force flushing of I/D caches.
+        asm volatile ("lui t0, %hi(prog)");
+        asm volatile ("lw ra, %lo(prog)(t0)");
+        asm volatile ("jalr ra, ra, 0");
+    }
+    else
+    {
+        printf("\n\nMagic number = 0x%X\n", *((uint32_t *) ehdr->e_ident));
+        printf("Error! Not an ELF file.\n\n");
+    }
+
+    // Halt the processor.
+    exit(0);
+
+    return 0;
+}
+
+#define N_ZERO_SECS 8
+
+int load_elf(Elf32_Ehdr *ehdr)
+{
+    Elf32_Phdr *section;
+    uint32_t skip, current_byte;
+    uint8_t  *dst_addr;
+    int idx, jdx;
+
+    // The info of sections to be initialized to zeros.
+    uint32_t *zmem[N_ZERO_SECS];  // Addresses of the sections.
+    int zsize[N_ZERO_SECS], zidx; // Sizes of the sectinos.
+
+    current_byte = sizeof(Elf32_Ehdr) + ehdr->e_phentsize*ehdr->e_phnum;
+
+    // Load all loadable sections of an ELF image to the destination.
+    zidx = 0;
+    section = (Elf32_Phdr *) pheader;
+    for (idx = 0; idx < ehdr->e_phnum; idx++)
+    {
+        // Locate CODE and DATA sections
+        if (section[idx].p_type == PT_LOAD && section[idx].p_filesz != 0)
+        {
+            dst_addr = (uint8_t *) section[idx].p_paddr;
+            skip = section[idx].p_offset - current_byte;
+            while (skip-- > 0) inbyte(), current_byte++;
+
+            for (jdx = 0; jdx < section[idx].p_filesz; jdx++)
+            {
+                dst_addr[jdx] = inbyte();
+                current_byte++;
+            }
+
+            // Record the memory areas that need to be zero-initialized.
+            zmem[zidx] = (uint32_t *) &(dst_addr[jdx]);
+            zsize[zidx] = (section[idx].p_memsz - jdx)/sizeof(int);
+            if (++zidx >= N_ZERO_SECS) break;
         }
     }
-    
-    buffer[idx] = '\0';
-    printf("Received string: %s\n", buffer);
-    idx = 0;
 
-    // while (1) {
-    //     char c = inbyte();  
-
-    //     char str[2];
-    //     str[0] = c;
-    //     str[1] = '\0';  
-
-    //     printf("Received char as string: %s\n", str);
-    // }
-       
-    while(1);
-    // exit(0);
+    // Set the uninitialized memory areas to all zeros.
+    for (idx = 0; idx < zidx; idx++)
+    {
+        for (jdx = 0; jdx < zsize[idx]; jdx++) zmem[idx][jdx] = 0;
+    }
+    return 0;
 }
 

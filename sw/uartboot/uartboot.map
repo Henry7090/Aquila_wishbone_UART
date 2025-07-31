@@ -4,65 +4,73 @@ There are no discarded input sections
 Memory Configuration
 
 Name             Origin             Length             Attributes
-code_ram         0x00000000         0x00000900         xr!rw
-data_ram         0x00000900         0x00000800         rw!x
+code_ram         0x00000000         0x00001000         xr!rw
+data_ram         0x00001000         0x00000800         rw!x
 *default*        0x00000000         0xffffffff
 
 Linker script and memory map
 
                 0x00000300                        __stack_size = 0x300
 
-.text           0x00000000      0x5f4
+.text           0x00000000      0x7a4
  boot.o(.text)
  .text          0x00000000       0x34 boot.o
                 0x00000000                boot
  *(.text)
- .text          0x00000034        0x0 uartboot.o
- .text          0x00000034      0x5c0 io_uart.o
-                0x00000034                exit
-                0x00000078                outbyte
-                0x000000c4                putchar
-                0x00000118                putd
-                0x000001f8                putx
-                0x00000288                puts
-                0x00000324                printf
-                0x0000050c                inbyte
-                0x00000580                getchar
+ .text          0x00000034      0x1b0 uartboot.o
+                0x00000034                load_elf
+ .text          0x000001e4      0x5c0 io_uart.o
+                0x000001e4                exit
+                0x00000228                outbyte
+                0x00000274                putchar
+                0x000002c8                putd
+                0x000003a8                putx
+                0x00000438                puts
+                0x000004d4                printf
+                0x000006bc                inbyte
+                0x00000730                getchar
 
-.text.startup   0x000005f4       0x8c
- .text.startup  0x000005f4       0x8c uartboot.o
-                0x000005f4                main
+.text.startup   0x000007a4      0x16c
+ .text.startup  0x000007a4      0x16c uartboot.o
+                0x000007a4                main
 
-.rela.dyn       0x00000680        0x0
- .rela.sdata    0x00000680        0x0 boot.o
+.rela.dyn       0x00000910        0x0
+ .rela.sdata    0x00000910        0x0 boot.o
 
-.data           0x00000900      0x11e
+.data           0x00001000      0x30a
  *(.data)
- .data          0x00000900        0x0 boot.o
- .data          0x00000900        0x0 uartboot.o
- .data          0x00000900        0x0 io_uart.o
+ .data          0x00001000        0x0 boot.o
+ .data          0x00001000        0x0 uartboot.o
+ .data          0x00001000        0x0 io_uart.o
  *(.bss)
- .bss           0x00000900        0x0 boot.o
- .bss           0x00000900        0x0 uartboot.o
- .bss           0x00000900        0x0 io_uart.o
+ .bss           0x00001000        0x0 boot.o
+ .bss           0x00001000       0xc0 uartboot.o
+                0x00001000                pheader
+                0x00001080                eheader
+ .bss           0x000010c0        0x0 io_uart.o
  *(.rodata*)
  .rodata.str1.4
-                0x00000900       0x55 uartboot.o
- *fill*         0x00000955        0x3 
- .rodata        0x00000958       0xc6 io_uart.o
+                0x000010c0      0x183 uartboot.o
+ *fill*         0x00001243        0x1 
+ .rodata        0x00001244       0xc6 io_uart.o
 
-.sdata          0x00000a20        0x4
- .sdata         0x00000a20        0x4 boot.o
-                0x00000a20                stack_top
+.sdata          0x0000130c        0xc
+ .sdata         0x0000130c        0x4 boot.o
+                0x0000130c                stack_top
+ .sdata         0x00001310        0x8 uartboot.o
+                0x00001310                year
+                0x00001314                organization
 
-.sbss           0x00000a24        0x4
- .sbss          0x00000a24        0x4 boot.o
-                0x00000a24                sp_store
+.sbss           0x00001318        0x8
+ .sbss          0x00001318        0x4 boot.o
+                0x00001318                sp_store
+ .sbss          0x0000131c        0x4 uartboot.o
+                0x0000131c                prog
 
-.stack          0x00000a30      0x300
-                0x00000d30                        . = (. + __stack_size)
- *fill*         0x00000a30      0x300 
-                0x00000d30                        __stack_top = .
+.stack          0x00001320      0x300
+                0x00001620                        . = (. + __stack_size)
+ *fill*         0x00001320      0x300 
+                0x00001620                        __stack_top = .
 LOAD boot.o
 LOAD uartboot.o
 LOAD io_uart.o

@@ -1,0 +1,1 @@
+./Vaquila_testharness ../../../sw/wishbone_uart_sw/main.elf
